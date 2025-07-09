@@ -1,6 +1,6 @@
 {
   "name": "websiteintegration_v1",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
@@ -30,10 +30,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BOTON03/web_site_dev_py.git"
+    "url": "git+https://github.com/BOTON03/Api_Integration_CRM.git"
   },
   "bugs": {
-    "url": "https://github.com/BOTON03/web_site_dev_py/issues"
+    "url": "https://github.com/BOTON03/Api_Integration_CRM/issues"
   },
-  "homepage": "https://github.com/BOTON03/web_site_dev_py#readme"
+  "homepage": "https://github.com/BOTON03/Api_Integration_CRM#readme"
 }
