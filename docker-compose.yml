@@ -1,46 +1,47 @@
-#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 version: '3.8'
-# Service synchronization database
-services:  
-  sync_job:
-    build: .
-    container_name: sync_job_runner_dev
-    environment:      
-      - ZOHO_CLIENT_ID=${ZOHO_CLIENT_ID}
-      - ZOHO_CLIENT_SECRET=${ZOHO_CLIENT_SECRET}
-      - ZOHO_REFRESH_TOKEN=${ZOHO_REFRESH_TOKEN}
-      - PG_HOST=${PG_HOST}
-      - PG_DATABASE=${PG_DATABASE}
-      - PG_USER=${PG_USER}
-      - PG_PASSWORD=${PG_PASSWORD}
-      - PG_PORT=${PG_PORT}
-      - PG_SSL=${PG_SSL}    
+
+services:
+  # Servicio de producción local (web)
+  web_site_prod:
+    build:
+      context: .
+    ports:
+      - "6000:6000"
+    environment:
+      - NODE_ENV=prod
+      - PG_PROD_HOST=${PG_PROD_HOST}
+      - PG_PROD_DATABASE=${PG_PROD_DATABASE}
+      - PG_PROD_USER=${PG_PROD_USER}
+      - PG_PROD_PASSWORD=${PG_PROD_PASSWORD}
+      - PG_PROD_PORT=${PG_PROD_PORT}
+      - PG_PROD_SSL=${PG_PROD_SSL}
+      - ZOHO_PROD_CLIENT_ID=${ZOHO_PROD_CLIENT_ID}
+      - ZOHO_PROD_CLIENT_SECRET=${ZOHO_PROD_CLIENT_SECRET}
+      - ZOHO_PROD_REFRESH_TOKEN=${ZOHO_PROD_REFRESH_TOKEN}
+      - PORT=6000
     volumes:
       - ./:/app
-    ports:
-      - "5000:5000"
     depends_on:
       postgres:
         condition: service_healthy
     restart: "no"
-
-  # Service data PostgreSQL
+  
   postgres:
-    image: postgres:16
-    container_name: dev_postgres_sync_dev
-    ports:
-      - "5433:5432"
+    image: postgres:13
+    container_name: dev_postgres_data
     environment:
-      POSTGRES_USER: ${PG_USER}
-      POSTGRES_PASSWORD: ${PG_PASSWORD}
-      POSTGRES_DB: ${PG_DATABASE}
-    volumes:
-      - postgres_sync_data_dev:/var/lib/postgresql/data
+      - POSTGRES_USER=${PG_PROD_USER}
+      - POSTGRES_PASSWORD=${PG_PROD_PASSWORD}
+      - POSTGRES_DB=${PG_PROD_DATABASE}
+    volumes:      
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${PG_USER} -d ${PG_DATABASE}"]
+      test: ["CMD-SHELL", "pg_isready -U ${PG_PROD_USER} -d ${PG_PROD_DATABASE}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
 volumes:
-  postgres_sync_data_dev:
+  postgres_data:

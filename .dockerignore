@@ -1,21 +1,24 @@
 # node_modules
-# .env
+# Ignorar directorio de Git
 .git
-# *.log
-# Dockerfile
-# docker-compose.yml
+.gitignore
 
 # Ignorar los archivos y carpetas del editor
 .vscode/
+
+# Ignorar archivos temporales y cachés
+*.log
+*.log.*
 
 *.iml
 
 # Ignorar dependencias locales
 node_modules/
 
-# Ignorar archivos de prueba
+# Ignorar archivos de pruebas
 test/
-
+tests/
+__tests__/
 # Ignorar archivos de configuración
 .env
 
@@ -33,3 +36,6 @@ Thumbs.db
 *.db
 #  Ignorar archivos de configuración de la aplicación
 logs_output/
+
+# Credenciales de GCP
+gcp-credentials.json

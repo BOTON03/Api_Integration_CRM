@@ -1,9 +1,27 @@
-# Dependencias
+# Dependencias de Node.js
 node_modules/
-# Archivos
+npm-debug.log
+yarn-error.log
+
+# Archivos generados por compilación o pruebas
+dist/
+build/
+coverage/
+
+# Archivos temporales y cachés
+*.log
+*.log.*
+.DS_Store
+*.swp
+*.swo
+.vscode/
+.idea/
+
 # Archivo de variables de entorno
 .env
 #
+# Credenciales de GCP
+gcp-credentials.json
 # Logs
 npm-debug.log*
 yarn-debug.log*
