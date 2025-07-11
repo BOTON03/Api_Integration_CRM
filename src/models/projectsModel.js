@@ -1,14 +1,13 @@
 const { pool } = require('../config/database');
 const logger = require('../utils/logger');
 
-async function upsertProject(projectData) {
+async function upsertProject(projectData) {  
   const query = `
     INSERT INTO public."Projects" (
         hc, name, slogan, address, small_description, long_description, sic,
         salary_minimum_count, discount_description, price_from_general,
         price_up_general, "type", mega_project_id, status, highlighted, built_area,
         private_area, rooms, bathrooms, latitude, longitude, is_public, attributes, city
-        
     ) VALUES (
         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24
     )
@@ -23,8 +22,6 @@ async function upsertProject(projectData) {
         longitude = EXCLUDED.longitude, is_public = EXCLUDED.is_public, attributes = EXCLUDED.attributes,
         city = EXCLUDED.city;
   `;
-  
-  // Se construye el array de valores explícitamente para garantizar el orden correcto. ¡Esto es una excelente práctica!
   const values = [
     projectData.hc, projectData.name, projectData.slogan, projectData.address,
     projectData.small_description, projectData.long_description, projectData.sic,
@@ -37,7 +34,6 @@ async function upsertProject(projectData) {
   ];
 
   try {
-    // La consulta se ejecuta. Si hay un error, el bloque catch lo manejará.
     await pool.query(query, values);
     return { success: true };
   } catch (error) {
@@ -46,32 +42,33 @@ async function upsertProject(projectData) {
   }
 }
 
-async function updateProjectFiles(projectId, galleryUrls, urbanPlansUrls) {
+async function updateProjectFilesAndTypologyData(projectId, galleryUrls, urbanPlansUrls, deliveryTime, deposit) {
   const query = `
     UPDATE public."Projects"
     SET
-      gallery = $1,
-      urban_plans = $2
-    WHERE hc = $3;
+        gallery = $1,
+        urban_plans = $2,
+        delivery_time = $3,
+        deposit = $4
+    WHERE hc = $5;
   `;
-  // Convierte los arrays de URLs a JSON para la BD, manejando el caso de arrays vacíos
-  const galleryUrlsJson = galleryUrls.length > 0 ? JSON.stringify(galleryUrls) : null;
-  const urbanPlansUrlsJson = urbanPlansUrls.length > 0 ? JSON.stringify(urbanPlansUrls) : null;
+  const galleryUrlsJson = galleryUrls && galleryUrls.length > 0 ? JSON.stringify(galleryUrls) : null;
+  const urbanPlansUrlsJson = urbanPlansUrls && urbanPlansUrls.length > 0 ? JSON.stringify(urbanPlansUrls) : null;
 
   try {
-    const result = await pool.query(query, [galleryUrlsJson, urbanPlansUrlsJson, projectId]);
+    
+    const result = await pool.query(query, [galleryUrlsJson, urbanPlansUrlsJson, deliveryTime, deposit, projectId]);
     if (result.rowCount === 0) {
-      logger.warn(`[Projects Model] Se intentó actualizar URLs para el proyecto HC ${projectId}, pero no se encontró.`);
+      logger.warn(`[Projects Model] Se intentó actualizar URLs/datos de tipología para el proyecto HC ${projectId}, pero no se encontró.`);
     }
     return { success: true };
   } catch (error) {
-    logger.error(`[Projects Model] Error al actualizar URLs para el proyecto HC ${projectId}:`, error);
+    logger.error(`[Projects Model] Error al actualizar URLs/datos de tipología para el proyecto HC ${projectId}:`, error);
     return { success: false, error };
   }
 }
 
-
 module.exports = {
-  upsertProject,
-  updateProjectFiles,
+  upsertProject,  
+  updateProjectFilesAndTypologyData,
 };

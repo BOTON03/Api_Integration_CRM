@@ -1,15 +1,15 @@
 const winston = require('winston');
-
-const logger = winston.createLogger({
-  level: 'debug', // Cambiado a debug para ver mensajes de logger.debug
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.json()
-  ),
-  transports: [
-    new winston.transports.File({ filename: 'error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'combined.log' }),
-    new winston.transports.Console()
+const consoleFormat = winston.format.combine(
+  winston.format.colorize(),
+  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+  winston.format.printf(info => `[${info.timestamp}] ${info.level}: ${info.message}`)
+);
+const logger = winston.createLogger({  
+  level: 'info',// level: 'debug',   
+  transports: [    
+    new winston.transports.Console({
+      format: consoleFormat,
+    }),
   ]
 });
 
